@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"pokedexcli/internal/commands"
 	"strings"
 )
 
@@ -14,9 +15,15 @@ func main() {
 		fmt.Print("Pokedex > ")
 		reader.Scan()
 		answer := cleanInput(reader.Text())
-		value, exists := Commands[answer[0]]
+		cmds := commands.GetCommands()
+		value, exists := cmds[answer[0]]
+
+		if len(answer) == 0 {
+			continue
+		}
+
 		if exists {
-			value.callback()
+			value.Callback()
 		} else {
 			fmt.Print("Unknown command")
 		}

@@ -7,9 +7,9 @@ import (
 )
 
 type cliCommand struct {
-	name        string
-	description string
-	callback    func() error
+	Name        string
+	Description string
+	Callback    func() error
 }
 
 var Commands map[string]cliCommand
@@ -17,7 +17,7 @@ var Commands map[string]cliCommand
 func CommandHelp() error {
 	fmt.Println("Welcome to the Pokedex! \n Usage:")
 	for _, value := range Commands {
-		fmt.Printf("%s: %s\n", value.name, value.description)
+		fmt.Printf("%s: %s\n", value.Name, value.Description)
 	}
 	return nil
 }
@@ -30,14 +30,18 @@ func CommandExit() error {
 func init() {
 	Commands = map[string]cliCommand{
 		"exit": {
-			name:        "exit",
-			description: "exit the Pokedex",
-			callback:    CommandExit,
+			Name:        "exit",
+			Description: "exit the Pokedex",
+			Callback:    CommandExit,
 		},
 		"help": {
-			name:        "help",
-			description: "help with the pokedex",
-			callback:    CommandHelp,
+			Name:        "help",
+			Description: "help with the pokedex",
+			Callback:    CommandHelp,
 		},
 	}
+}
+
+func GetCommands() map[string]cliCommand {
+	return Commands
 }
