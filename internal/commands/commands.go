@@ -74,7 +74,7 @@ func CommandMap() error {
 }
 
 func CommandMapb() error {
-
+	return nil
 }
 
 func init() {
@@ -103,4 +103,4 @@ func GetCommands() map[string]cliCommand {
 	return commands
 }
 
-func jsonGrabber(url string, data jsonStructs) struct{}
+//func jsonGrabber(url string, data jsonStructs) struct{}
