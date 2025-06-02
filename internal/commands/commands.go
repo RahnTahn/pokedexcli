@@ -9,9 +9,9 @@ import (
 	"os"
 )
 
-type jsonStructs interface {
-	locations
-}
+//type jsonStructs interface {
+//	locations
+//}
 
 type locations struct {
 	Next     string `json:"next"`
@@ -61,7 +61,7 @@ func CommandMap() error {
 	var locationList locations
 	err = json.Unmarshal(body, &locationList)
 	if err != nil {
-		return errors.New("Json Failed")
+		return errors.New("json failed")
 	}
 
 	mapCurrent = locationList.Next
