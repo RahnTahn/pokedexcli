@@ -9,6 +9,10 @@ import (
 	"os"
 )
 
+type jsonStructs interface {
+	locations
+}
+
 type locations struct {
 	Next     string `json:"next"`
 	Previous string `json:"previous"`
@@ -69,6 +73,10 @@ func CommandMap() error {
 	return nil
 }
 
+func CommandMapb() error {
+
+}
+
 func init() {
 	mapCurrent = "https://pokeapi.co/api/v2/location?limit=20"
 	commands = map[string]cliCommand{
@@ -94,3 +102,5 @@ func init() {
 func GetCommands() map[string]cliCommand {
 	return commands
 }
+
+func jsonGrabber(url string, data jsonStructs) struct{}
