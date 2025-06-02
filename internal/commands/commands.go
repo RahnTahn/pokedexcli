@@ -1,22 +1,34 @@
 package commands
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"net/http"
 	"os"
 )
 
+type locations struct {
+	Next     string `json:"next"`
+	Previous string `json:"previous"`
+	Results  []struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	}
+}
 type cliCommand struct {
 	Name        string
 	Description string
 	Callback    func() error
 }
 
-var Commands map[string]cliCommand
+var commands map[string]cliCommand
+var mapCurrent string
 
 func CommandHelp() error {
 	fmt.Println("Welcome to the Pokedex! \n Usage:")
-	for _, value := range Commands {
+	for _, value := range commands {
 		fmt.Printf("%s: %s\n", value.Name, value.Description)
 	}
 	return nil
@@ -27,8 +39,39 @@ func CommandExit() error {
 	return errors.New("Exiting program")
 }
 
+func CommandMap() error {
+	res, err := http.Get(mapCurrent)
+	if err != nil {
+		return errors.New("res failed")
+	}
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return errors.New("body failed")
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode > 299 {
+		return errors.New("connection failed")
+	}
+
+	var locationList locations
+	err = json.Unmarshal(body, &locationList)
+	if err != nil {
+		return errors.New("Json Failed")
+	}
+
+	mapCurrent = locationList.Next
+
+	for _, location := range locationList.Results {
+		fmt.Println(location.Name)
+	}
+
+	return nil
+}
+
 func init() {
-	Commands = map[string]cliCommand{
+	mapCurrent = "https://pokeapi.co/api/v2/location?limit=20"
+	commands = map[string]cliCommand{
 		"exit": {
 			Name:        "exit",
 			Description: "exit the Pokedex",
@@ -39,9 +82,15 @@ func init() {
 			Description: "help with the pokedex",
 			Callback:    CommandHelp,
 		},
+		"map": {
+			Name:        "map",
+			Description: "locations in pokemon",
+			Callback:    CommandMap,
+		},
 	}
+
 }
 
 func GetCommands() map[string]cliCommand {
-	return Commands
+	return commands
 }
