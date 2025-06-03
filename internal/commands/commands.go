@@ -80,7 +80,7 @@ func CommandMapb() error {
 }
 
 func init() {
-	mapCurrent = "https://pokeapi.co/api/v2/location?limit=20"
+	mapCurrent = "https://pokeapi.co/api/v2/location-area?limit=20"
 	commands = map[string]cliCommand{
 		"exit": {
 			Name:        "exit",
