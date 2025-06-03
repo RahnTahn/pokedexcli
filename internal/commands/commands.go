@@ -9,10 +9,6 @@ import (
 	"os"
 )
 
-//type jsonStructs interface {
-//	locations
-//}
-
 type locations struct {
 	Next     string `json:"next"`
 	Previous string `json:"previous"`
@@ -44,22 +40,10 @@ func CommandExit() error {
 }
 
 func CommandMap() error {
-	res, err := http.Get(mapCurrent)
-	if err != nil {
-		return errors.New("res failed")
-	}
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return errors.New("body failed")
-	}
-	defer res.Body.Close()
 
-	if res.StatusCode > 299 {
-		return errors.New("connection failed")
-	}
-
+	jsonData, _ := jsonGrabber(mapCurrent)
 	var locationList locations
-	err = json.Unmarshal(body, &locationList)
+	err := json.Unmarshal(jsonData, &locationList)
 	if err != nil {
 		return errors.New("json failed")
 	}
@@ -103,4 +87,20 @@ func GetCommands() map[string]cliCommand {
 	return commands
 }
 
-//func jsonGrabber(url string, data jsonStructs) struct{}
+func jsonGrabber(url string) ([]byte, error) {
+	res, err := http.Get(mapCurrent)
+	if err != nil {
+		return nil, errors.New("res failed")
+	}
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, errors.New("body failed")
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode > 299 {
+		return nil, errors.New("connection failed")
+	}
+
+	return body, nil
+}
