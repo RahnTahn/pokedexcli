@@ -51,13 +51,31 @@ func CommandMap() error {
 	mapCurrent = locationList.Next
 
 	for _, location := range locationList.Results {
-		fmt.Println(location.Name)
+		fmt.Printf("\n%s", location.Name)
 	}
 
 	return nil
 }
 
 func CommandMapb() error {
+	jsonData, _ := jsonGrabber(mapCurrent)
+	var locationList locations
+	err := json.Unmarshal(jsonData, &locationList)
+	if err != nil {
+		return errors.New("json failed")
+	}
+	if locationList.Previous == "" {
+		fmt.Println("you're on the first page")
+		return nil
+	}
+	jsonData, _ = jsonGrabber(locationList.Previous)
+	err = json.Unmarshal(jsonData, &locationList)
+	if err != nil {
+		return errors.New("json failed")
+	}
+
+	mapCurrent = locationList.Previous
+	CommandMap()
 	return nil
 }
 
@@ -79,6 +97,11 @@ func init() {
 			Description: "locations in pokemon",
 			Callback:    CommandMap,
 		},
+		"mapb": {
+			Name:        "mapb",
+			Description: "to move backwards in the map section",
+			Callback:    CommandMapb,
+		},
 	}
 
 }
@@ -88,7 +111,7 @@ func GetCommands() map[string]cliCommand {
 }
 
 func jsonGrabber(url string) ([]byte, error) {
-	res, err := http.Get(mapCurrent)
+	res, err := http.Get(url)
 	if err != nil {
 		return nil, errors.New("res failed")
 	}
